@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 jobs:
   build-and-deploy:
@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Deploy to Production via SSH
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/main'
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -20,16 +20,16 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           script: |
-            cd /var/www/PAJ/ProjectAlijahonServer
+            cd /var/www/PAJ/DreamHouse/DreamHouse
             git fetch origin
-            git reset --hard origin/master
+            git reset --hard origin/main
             git remote remove origin
-            git remote add origin https://github.com/ikromhoshimjonov/ProjectAlijahonServer.git
-            git pull origin master
+            git remote add origin https://github.com/ikromhoshimjonov/DreamHouse.git
+            git pull origin main
             source .venv/bin/activate
-            pip install -r requirments.txt
+            pip install -r requirements.txt
             make mig
-            sudo systemctl restart alijahon_project.service
-            sudo systemctl enable alijahon_project.service
+            sudo systemctl restart dream_house.service
+            sudo systemctl enable dream_house.service
             sudo systemctl enable nginx.service
             sudo systemctl restart nginx.service
