@@ -15,7 +15,6 @@ from authentication.serializers import RegisterModelSerializer, ForgetPasswordSe
 class RegisterCreateAPIView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterModelSerializer
-    permission_classes = [IsAuthenticated]
 
 @extend_schema(tags=['login'], request=ForgetPasswordSerializer)
 class ForgetPasswordCreateAPIView(APIView):
