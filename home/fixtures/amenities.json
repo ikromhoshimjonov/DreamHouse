@@ -1,0 +1,156 @@
+[
+   {
+    "model": "home.amenities",
+    "pk": 1,
+    "fields": {
+      "name": "Equipped Kitchen"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 2,
+    "fields": {
+      "name": "Gym"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 3,
+    "fields": {
+      "name": "Laundry"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 4,
+    "fields": {
+      "name": "Media Room"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 5,
+    "fields": {
+      "name": "Back yard"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 6,
+    "fields": {
+      "name": "Basketball court"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 7,
+    "fields": {
+      "name": "Front yard"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 8,
+    "fields": {
+      "name": "Garage Attached"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 9,
+    "fields": {
+      "name": "Hot Bath"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 10,
+    "fields": {
+      "name": "Pool"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 11,
+    "fields": {
+      "name": "Central Air"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 12,
+    "fields": {
+      "name": "Electricity"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 13,
+    "fields": {
+      "name": "Heating"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 14,
+    "fields": {
+      "name": "Natural Gas"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 15,
+    "fields": {
+      "name": "Ventilation"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 16,
+    "fields": {
+      "name": "Water"
+  }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 17,
+    "fields": {
+      "name": "Chair Accessible"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 18,
+    "fields": {
+      "name": "Elevator"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 19,
+    "fields": {
+      "name": "Fireplace"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 20,
+    "fields": {
+      "name": "Smoke detectors"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 21,
+    "fields": {
+      "name": "Washer and dryer"
+    }
+  },
+  {
+    "model": "home.amenities",
+    "pk": 22,
+    "fields": {
+      "name": "WiFi"
+    }
+  }
+]
