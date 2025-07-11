@@ -1,33 +1,47 @@
+import json
+import random
 import smtplib
+from datetime import timedelta
+
 from django.contrib.auth.hashers import make_password
+from redis import  Redis
 from rest_framework import serializers
-from rest_framework.fields import CharField
+from rest_framework.fields import CharField, EmailField, IntegerField
 from rest_framework.serializers import ModelSerializer, Serializer
+
 from authentication.models import User, SocialMedia, Wishlist
 from root.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_PORT, EMAIL_HOST
+
 
 class RegisterModelSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = "email" , "password"
-
-    def validate_password(self,value):
-        password = make_password(value)
-        return password
-
-    def create(self, validated_data):
-        data = self.data
-        password = self.initial_data.get("password")
-        data["password_not_hashed"] = password
-        return  User.objects.create(**data)
-
-class ForgetPasswordSerializer(Serializer):
-    email = CharField(max_length=255)
+        write_only_fields = "password"
 
     def validate_email(self,value):
-        if not User.objects.filter(email=value).exists():
-            raise serializers.ValidationError({"message":"Bunday emailga ega user mavjud emas"})
+        random_number = random.randrange(10000, 99999)
+        password_hash = make_password(self.initial_data.get("password"))
+        port = EMAIL_PORT
+        smtp_server = EMAIL_HOST
+        sender_email = EMAIL_HOST_USER
+        password = EMAIL_HOST_PASSWORD
+
+        with smtplib.SMTP_SSL(smtp_server, port) as server:
+            server.login(sender_email, password)
+            server.sendmail(sender_email, value, f"code = {random_number}")
+
+        data = {
+            "email": value,
+            "code": random_number,
+            "password":password_hash
+        }
+        redis = Redis(decode_responses=True)
+        str_data = json.dumps(data)
+        redis.mset({value: str_data})
+        redis.expire(value, time=timedelta(minutes=1))
         return value
+
 
 
     def send_email(self):
@@ -95,10 +109,64 @@ class WishlistModelSerializer(ModelSerializer):
         model = Wishlist
         fields = "user","home"
 
+class VerifySerializer(Serializer):
+    email = EmailField(max_length=200)
+    code = IntegerField()
 
+    def validate_email(self,value):
+        data_request = self.initial_data
+        redis = Redis(decode_responses=True)
+        datas_str = redis.get(value)
+        if not datas_str:
+            raise serializers.ValidationError({"message": "Bunday email mavjud emas tekshirib qaytadan kiriting !!!"})
+        datas = json.loads(datas_str)
+        code_random = datas.get("code")
+        code = data_request.get("code")
+        if str(code_random) == str(code):
+            datas.pop("code")
+            User.objects.create(**datas)
+            return value
+        raise serializers.ValidationError({"message":"Emailga junatgan kodni kiriting muammo bor !!!"})
 
+class ForgetPasswordSerializer(Serializer):
+    email = EmailField(max_length=255)
 
+    def validate_email(self,value):
+        if not  User.objects.filter(email=value):
+            raise serializers.ValidationError({"message": "Bunday email mavjud emas tekshirib kiriting !!"})
+        return value
 
+    def send_mail(self):
+        port = EMAIL_PORT
+        smtp_server = EMAIL_HOST
+        sender_email = EMAIL_HOST_USER
+        password = EMAIL_HOST_PASSWORD
+        email = self.data.get("email")
+        message = f"""\
+        Subject: Royxatdan otish havolasi
 
+        Tasdiqlash havolangiz:
+        http://localhost:8000/#/register/api_v1_change_create/?email={email}
+        """
 
+        with smtplib.SMTP_SSL(smtp_server, port) as server:
+            server.login(sender_email, password)
+            server.sendmail(sender_email, email, message)
 
+class ChangeSerializer(Serializer):
+    new_password = CharField(max_length=255)
+    confirm_password = CharField(max_length=255)
+    email = CharField(max_length=255)
+
+    def validate_new_password(self,value):
+        datas = self.initial_data
+        confirm_password = datas.get("confirm_password")
+        email = datas.get("email")
+        if confirm_password == value:
+            if  User.objects.filter(email=email).exists():
+                user = User.objects.get(email=email)
+                user.password = make_password(value)
+                user.save()
+                return value
+            raise serializers.ValidationError({"message":"Bunday email mavjud emas tug'ri kiritimg !! "})
+        raise  serializers.ValidationError({"message":"Confirm password ni  tug'ri kiritimg !! "})

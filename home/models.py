@@ -21,7 +21,6 @@ class Home(Model):
     name = CharField(max_length=255)
     description = TextField()
     property_code = CharField(max_length=255)
-    new_column = CharField(max_length=255)
     price = DecimalField(max_digits=15,decimal_places=2)
     beds = IntegerField()
     baths = IntegerField()

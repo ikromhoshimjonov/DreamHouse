@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from redis import Redis
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, ListCreateAPIView, DestroyAPIView
@@ -7,24 +8,19 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from authentication.models import User, SocialMedia, Wishlist
-from authentication.serializers import RegisterModelSerializer, ForgetPasswordSerializer, ChangePasswordSerializer, \
-    RequireFieldsUser, SocialMediaSerializer, SocialMediaUpdateSerializer, WishlistModelSerializer
+from authentication.serializers import RegisterModelSerializer, ChangePasswordSerializer, \
+    RequireFieldsUser, SocialMediaSerializer, SocialMediaUpdateSerializer, WishlistModelSerializer, VerifySerializer, \
+    ForgetPasswordSerializer, ChangeSerializer
 
 
-@extend_schema(tags=["register"])
-class RegisterCreateAPIView(CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = RegisterModelSerializer
 
-@extend_schema(tags=['login'], request=ForgetPasswordSerializer)
-class ForgetPasswordCreateAPIView(APIView):
-      permission_classes = [IsAuthenticated]
-      def post(self, request):
-          serializer = ForgetPasswordSerializer(data=request.data)
-          if serializer.is_valid():
-              serializer.send_email()
-              return JsonResponse({"message": "Mofaqiyatli tastiqlandi"})
-          return JsonResponse({"errors": serializer.errors.get("email")})
+@extend_schema(tags=["register"],request=RegisterModelSerializer)
+class RegisterCreateAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = RegisterModelSerializer(data=request.data)
+        if serializer.is_valid():
+            return JsonResponse({"message": "Email ga kod yuborildi !!"})
+        return JsonResponse(serializer.errors)
 
 @extend_schema(tags=['login'], request=ChangePasswordSerializer)
 class ChangePasswordAPIView(APIView):
@@ -101,5 +97,28 @@ class WishlistDestroyApi(DestroyAPIView):
         pk = self.kwargs.get("pk")
         return super().get_queryset().filter(id=pk,user=self.request.user)
 
+@extend_schema(tags=["register"],request=VerifySerializer)
+class VerifyApiView(APIView):
+    def post(self,request, *args, **kwargs):
+        serializer = VerifySerializer(data=request.data, context={"request": request})
+        if serializer.is_valid():
+            return JsonResponse({"message": "Mofaqiyatli tastiqlandi"})
+        return JsonResponse(serializer.errors)
 
+@extend_schema(tags=["register"],request=ForgetPasswordSerializer)
+class ForgetPasswordAPIView(APIView):
+    def post(self,request, *args, **kwargs):
+        serializers = ForgetPasswordSerializer(data=request.data)
+        if serializers.is_valid():
+            serializers.send_mail()
+            return JsonResponse({"message":"Emailingizga xabar yuborildi"})
+        return JsonResponse(serializers.errors)
+
+@extend_schema(tags=["register"],request=ChangeSerializer)
+class ChangeAPIView(APIView):
+    def post(self,request, *args, **kwargs):
+        serializers = ChangeSerializer(data=request.data)
+        if serializers.is_valid():
+            return JsonResponse({"message": "Password uzgartirildi !!"})
+        return JsonResponse(serializers.errors)
 

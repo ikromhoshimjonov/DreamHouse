@@ -1,4 +1,3 @@
-
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db.models import TextField, ImageField, CharField, Model, ForeignKey, CASCADE, SET_NULL, EmailField
@@ -41,7 +40,6 @@ class User(AbstractUser):
     location = CharField(max_length=255,null=True,blank=True)
     address = CharField(max_length=255,null=True,blank=True)
     web = CharField(max_length=255,null=True,blank=True)
-    password_not_hashed = CharField(max_length=255,null=True,blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
