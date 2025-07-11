@@ -4,7 +4,6 @@ import smtplib
 from datetime import timedelta
 
 from django.contrib.auth.hashers import make_password
-from django.core.mail import send_mail
 from redis import  Redis
 from rest_framework import serializers
 from rest_framework.fields import CharField, EmailField, IntegerField
@@ -32,7 +31,7 @@ class RegisterModelSerializer(ModelSerializer):
         # with smtplib.SMTP_SSL(smtp_server, port) as server:
         #     server.login(sender_email, password)
         #     server.sendmail(sender_email, value, f"code = {random_number}")
-        send_email(value, f"Code: {random_number}")
+        send_email(value,f"code {random_number}")
 
         data = {
             "email": value,

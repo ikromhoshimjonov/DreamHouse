@@ -4,7 +4,7 @@ from email.mime.multipart import MIMEMultipart
 
 from root.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_PORT, EMAIL_HOST
 
-def send_email(self,receiver_email , message_text):
+def send_email(receiver_email , message_text):
     sender_email = EMAIL_HOST_USER
     password = EMAIL_HOST_PASSWORD
     message = MIMEMultipart("alternative")
