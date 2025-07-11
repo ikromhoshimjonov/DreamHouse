@@ -80,7 +80,7 @@ sudo systemctl start celery.service
 sudo systemctl status celery.service
 
 
-
+a
 1. comp -> github, gitlab, bitbucket -> server
 
 2. comp -> server
