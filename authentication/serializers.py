@@ -4,6 +4,7 @@ import smtplib
 from datetime import timedelta
 
 from django.contrib.auth.hashers import make_password
+from django.core.mail import send_mail
 from redis import  Redis
 from rest_framework import serializers
 from rest_framework.fields import CharField, EmailField, IntegerField
@@ -11,6 +12,7 @@ from rest_framework.serializers import ModelSerializer, Serializer
 
 from authentication.models import User, SocialMedia, Wishlist
 from root.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_PORT, EMAIL_HOST
+from sender_mail.send_email import send_email
 
 
 class RegisterModelSerializer(ModelSerializer):
@@ -22,14 +24,15 @@ class RegisterModelSerializer(ModelSerializer):
     def validate_email(self,value):
         random_number = random.randrange(10000, 99999)
         password_hash = make_password(self.initial_data.get("password"))
-        port = EMAIL_PORT
-        smtp_server = EMAIL_HOST
-        sender_email = EMAIL_HOST_USER
-        password = EMAIL_HOST_PASSWORD
+        # port = EMAIL_PORT
+        # smtp_server = EMAIL_HOST
+        # sender_email = EMAIL_HOST_USER
+        # password = EMAIL_HOST_PASSWORD
 
-        with smtplib.SMTP_SSL(smtp_server, port) as server:
-            server.login(sender_email, password)
-            server.sendmail(sender_email, value, f"code = {random_number}")
+        # with smtplib.SMTP_SSL(smtp_server, port) as server:
+        #     server.login(sender_email, password)
+        #     server.sendmail(sender_email, value, f"code = {random_number}")
+        send_email(value, f"Code: {random_number}")
 
         data = {
             "email": value,
@@ -41,22 +44,6 @@ class RegisterModelSerializer(ModelSerializer):
         redis.mset({value: str_data})
         redis.expire(value, time=timedelta(minutes=1))
         return value
-
-
-
-    def send_email(self):
-        receiver_email = self.data.get("email")
-        password_message = User.objects.filter(email=receiver_email).first().password_not_hashed
-
-        port = EMAIL_PORT
-        smtp_server = EMAIL_HOST
-        sender_email = EMAIL_HOST_USER
-        password = EMAIL_HOST_PASSWORD
-
-
-        with smtplib.SMTP_SSL(smtp_server, port) as server:
-            server.login(sender_email, password)
-            server.sendmail(sender_email, receiver_email,f"Bu sizning passwordingiz = {password_message}")
 
 class ChangePasswordSerializer(Serializer):
     old_password = CharField(max_length=255)
